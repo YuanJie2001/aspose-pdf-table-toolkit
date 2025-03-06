@@ -1,4 +1,4 @@
-package com.vector.utils.pdf.handler;
+package com.vector.handler;
 
 import com.vector.utils.pdf.reflect.TableFieldMapperReflect;
 import com.vector.utils.pdf.entity.ProductInfo;
