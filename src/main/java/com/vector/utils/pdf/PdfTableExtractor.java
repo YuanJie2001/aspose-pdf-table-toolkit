@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * pdf 表格解析工具类，提供从PDF文档中提取并处理表格数据的功能
  *
  * @author YuanJie
- * @ClassName Demo
+ * @ClassName PdfTableExtractor
  * @description: 本类通过解析PDF文档结构，识别表格数据并进行结构化处理，支持多线程环境下的表格解析操作
  * @date 2025/2/27 15:36
  */
@@ -86,17 +86,20 @@ public class PdfTableExtractor {
             // 数据清洗
             cleanData(builder);
             // 将解析结果传递给映射处理器
-            for (TextParsingResultMapper handler : TextParsingResultMapper.getHandlers()) {
-                try {
-                    handler.processTable(builder);
-                } catch (Exception e) {
-                    log.error("表格处理失败,内容: {},原因: {}", builder, e.getMessage());
-                }
-            }
+            parsingMapping(builder);
         }
 
     }
 
+    private static void parsingMapping(StringBuilder builder) {
+        for (TextParsingResultMapper handler : TextParsingResultMapper.getHandlers()) {
+            try {
+                handler.processTable(builder);
+            } catch (Exception e) {
+                log.error("表格处理失败,内容: {},原因: {}", builder, e.getMessage());
+            }
+        }
+    }
 
     /**
      * 处理单个表格数据，将表格内容拼接为字符串并记录日志
