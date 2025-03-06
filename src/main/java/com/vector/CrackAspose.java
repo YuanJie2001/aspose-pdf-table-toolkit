@@ -11,7 +11,7 @@ import java.io.IOException;
  * @date 2025/2/27 11:32
  */
 public class CrackAspose {
-    private static final String originPath = "C:\\Users\\YuanJie\\Desktop\\aspose-wps\\lib\\aspose-words-24.3-jdk17-crack.jar";
+    private static final String originPath = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\lib\\aspose-words-24.3-jdk17-crack.jar";
     public static void main(String[] args) throws NotFoundException, CannotCompileException, IOException {
         ClassPool.getDefault().insertClassPath(originPath);
         CtClass clazz = ClassPool.getDefault().getCtClass("com.aspose.words.zzYzt");
