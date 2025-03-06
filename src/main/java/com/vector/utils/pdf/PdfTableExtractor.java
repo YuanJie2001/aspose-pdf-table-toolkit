@@ -91,6 +91,10 @@ public class PdfTableExtractor {
 
     }
 
+    /**
+     * 处理表格数据，将解析结果传递给映射处理器进行处理
+     * @param builder
+     */
     private static void parsingMapping(StringBuilder builder) {
         for (TextParsingResultMapper handler : TextParsingResultMapper.getHandlers()) {
             try {
