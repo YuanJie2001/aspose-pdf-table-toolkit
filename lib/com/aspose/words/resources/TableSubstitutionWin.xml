@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<TableSubstitutionSettings xmlns="Aspose.Words">
+    <SubstitutesTable>
+        <Item OriginalFont="Arabic Transparent" SubstituteFonts="Arial" />
+        <Item OriginalFont="Arial Baltic" SubstituteFonts="Arial" />
+        <Item OriginalFont="Arial CE" SubstituteFonts="Arial" />
+        <Item OriginalFont="Arial Cyr" SubstituteFonts="Arial" />
+        <Item OriginalFont="Arial Greek" SubstituteFonts="Arial" />
+        <Item OriginalFont="Arial TUR" SubstituteFonts="Arial" />
+        <Item OriginalFont="Courier New Baltic" SubstituteFonts="Courier New" />
+        <Item OriginalFont="Courier New CE" SubstituteFonts="Courier New" />
+        <Item OriginalFont="Courier New Cyr" SubstituteFonts="Courier New" />
+        <Item OriginalFont="Courier New Greek" SubstituteFonts="Courier New" />
+        <Item OriginalFont="Courier New TUR" SubstituteFonts="Courier New" />
+        <Item OriginalFont="Helvetica" SubstituteFonts="Arial" />
+        <Item OriginalFont="MS Shell Dlg" SubstituteFonts="Microsoft Sans Serif" />
+        <Item OriginalFont="MS Shell Dlg 2" SubstituteFonts="Tahoma" />
+        <Item OriginalFont="Tahoma Armenian" SubstituteFonts="Tahoma" />
+        <Item OriginalFont="Times New Roman Baltic" SubstituteFonts="Times New Roman" />
+        <Item OriginalFont="Times New Roman CE" SubstituteFonts="Times New Roman" />
+        <Item OriginalFont="Times New Roman Cyr" SubstituteFonts="Times New Roman" />
+        <Item OriginalFont="Times New Roman Greek" SubstituteFonts="Times New Roman" />
+        <Item OriginalFont="Times New Roman TUR" SubstituteFonts="Times New Roman" />
+    </SubstitutesTable>
+</TableSubstitutionSettings>

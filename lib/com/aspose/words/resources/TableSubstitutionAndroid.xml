@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<TableSubstitutionSettings xmlns="Aspose.Words">
+    <SubstitutesTable>
+        <!-- Android version: descending order, from 9th to 2th  -->
+
+        <!-- sans-serif -->
+        <Item OriginalFont="Arial" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Helvetica" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Tahoma" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Verdana" SubstituteFonts="Roboto, Droid Sans" />
+
+        <!-- serif -->
+        <Item OriginalFont="Times" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Times New Roman" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Palatino" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Palatino Linotype" SubstituteFonts="Noto Serif, Droid Serif" />
+
+        <Item OriginalFont="Georgia" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Baskerville" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Baskerville Old Face" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Goudy" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Goudy Old Style" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Fantasy" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="ITC Stone Serif" SubstituteFonts="Noto Serif, Droid Serif" />
+
+        <!-- monospace and serif-monospace -->
+        <Item OriginalFont="Courier" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+        <Item OriginalFont="Courier New" SubstituteFonts="Cutive Mono, Droid Sans Mono" />
+
+        <!-- other -->
+        <Item OriginalFont="Cursive" SubstituteFonts="Dancing Script, Droid Serif" />
+        <Item OriginalFont="Casual" SubstituteFonts="Coming Soon, Droid Sans Fallback" />
+
+        <Item OriginalFont="Charcoal" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Comic Sans MS" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Lucida Fax" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Lucida Bright" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Lucida Sans" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Lucida Sans Unicode" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Lucida Sans Typewriter" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Lucida Grande" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Lucida Console" SubstituteFonts="Cutive Mono Bold, Droid Sans Mono" />
+
+        <Item OriginalFont="New York" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Trebuchet MS" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Impact" SubstituteFonts="Roboto Bold, Droid Sans Bold" />
+
+        <Item OriginalFont="Arial Baltic" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Arial CE" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Arial Cyr" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Arial Greek" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Arial TUR" SubstituteFonts="Arial, Roboto, Droid Sans" />
+        <Item OriginalFont="Arial Unicode MS" SubstituteFonts="Droid Sans Fallback" />
+
+        <Item OriginalFont="Courier New Baltic" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+        <Item OriginalFont="Courier New CE" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+        <Item OriginalFont="Courier New Cyr" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+        <Item OriginalFont="Courier New Greek" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+        <Item OriginalFont="Courier New TUR" SubstituteFonts="Courier New, Cutive Mono, Droid Sans Mono" />
+
+        <Item OriginalFont="Tahoma Armenian" SubstituteFonts="Tahoma, Roboto, Droid Sans, Droid Sans Fallback" />
+        <Item OriginalFont="Times New Roman Baltic" SubstituteFonts="Times New Roman, Noto Serif, Droid Serif" />
+        <Item OriginalFont="Times New Roman CE" SubstituteFonts="Times New Roman, Noto Serif, Droid Serif" />
+        <Item OriginalFont="Times New Roman Cyr" SubstituteFonts="Times New Roman, Noto Serif, Droid Serif" />
+        <Item OriginalFont="Times New Roman Greek" SubstituteFonts="Times New Roman, Noto Serif, Droid Serif" />
+        <Item OriginalFont="Times New Roman TUR" SubstituteFonts="Times New Roman, Noto Serif, Droid Serif" />
+
+        <Item OriginalFont="Microsoft Sans Serif" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="MS UI Gothic" SubstituteFonts="Roboto, Droid Sans" />
+        <Item OriginalFont="Cambria Math" SubstituteFonts="Noto Serif, Droid Serif" />
+        <Item OriginalFont="Calibri" SubstituteFonts="Roboto, Droid Sans" />
+
+        <Item OriginalFont="Arabic Transparent" SubstituteFonts="Arial, Droid Sans Fallback" />
+        <Item OriginalFont="PMingLiU-ExtB" SubstituteFonts="Droid Sans Fallback" />
+        <Item OriginalFont="MS PGothic" SubstituteFonts="Droid Sans Fallback" />
+        <Item OriginalFont="Microsoft YaHei" SubstituteFonts="Droid Sans Fallback" />
+
+        <Item OriginalFont="MS Shell Dlg" SubstituteFonts="Microsoft Sans Serif, Roboto, Droid Sans" />
+        <Item OriginalFont="MS Shell Dlg 2" SubstituteFonts="Tahoma, Roboto, Droid Sans" />
+    </SubstitutesTable>
+</TableSubstitutionSettings>
