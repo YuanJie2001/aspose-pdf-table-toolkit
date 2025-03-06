@@ -30,8 +30,8 @@ public class TableFieldMapperReflect {
     /**
      * 加载指定类中的字段映射关系
      *
-     * @param clazz 需要加载映射关系的类
-     * @return 映射关系Map
+     * @param clazz 需要加载映射关系的目标类
+     * @return 映射关系Map，结构为[表字段名 -> 对应的Field对象]
      */
     public static Map<String, Field> loadFieldMappings(Class<?> clazz) {
         return CLASS_FIELD_CACHE.computeIfAbsent(clazz, cls -> {
@@ -51,13 +51,14 @@ public class TableFieldMapperReflect {
         });
     }
 
+
     /**
-     * 使用注解方式将字段值映射到目标对象的对应属性
+     * 使用注解方式将字段值映射到目标对象的对应属性（使用默认日期格式）
      *
-     * @param target 目标对象
-     * @param key 表格中的字段名
-     * @param value 字段值
-     * @param fieldCache 字段映射缓存
+     * @param target 需要设置属性的目标对象
+     * @param key 表格中的原始字段名称
+     * @param value 从表格中读取的原始字符串值
+     * @param fieldCache 通过loadFieldMappings加载的字段映射缓存
      */
     public static void mapFieldByAnnotation(Object target, String key, String value,
                                             Map<String, Field> fieldCache) {
@@ -67,11 +68,11 @@ public class TableFieldMapperReflect {
     /**
      * 使用注解方式将字段值映射到目标对象的对应属性
      *
-     * @param target 目标对象
-     * @param key 表格中的字段名
-     * @param value 字段值
-     * @param fieldCache 字段映射缓存
-     * @param dateFormat 日期格式化器
+     * @param target 需要设置属性的目标对象
+     * @param key 表格中的原始字段名称
+     * @param value 从表格中读取的原始字符串值
+     * @param fieldCache 通过loadFieldMappings加载的字段映射缓存
+     * @param dateFormat 用于日期类型转换的自定义格式化器
      */
     public static void mapFieldByAnnotation(Object target, String key, String value,
                                             Map<String, Field> fieldCache, SimpleDateFormat dateFormat) {
@@ -82,9 +83,10 @@ public class TableFieldMapperReflect {
         }
 
         try {
+            // 类型转换处理流程
             Class<?> fieldType = field.getType();
             Object convertedValue = null;
-
+            // 根据字段类型进行值转换
             if (String.class.equals(fieldType)) {
                 convertedValue = value;
             } else if (Date.class.equals(fieldType)) {
@@ -100,7 +102,7 @@ public class TableFieldMapperReflect {
             } else {
                 log.warn("不支持的字段类型: {}", fieldType.getName());
             }
-
+            // 设置转换后的值到目标字段
             if (convertedValue != null) {
                 field.set(target, convertedValue);
             }
@@ -108,7 +110,13 @@ public class TableFieldMapperReflect {
             log.error("设置字段值失败: {} = {}, 原因: {}", field.getName(), value, e.getMessage());
         }
     }
-
+    /**
+     * 数值类型解析器
+     *
+     * @param type 目标数值类型（支持Long/Integer/Double及其基本类型）
+     * @param value 待解析的字符串数值
+     * @return 解析后的数值对象，解析失败时返回null
+     */
     private static Object parseNumber(Class<?> type, String value) {
         try {
             if (Long.class.equals(type) || long.class.equals(type)) {
@@ -124,6 +132,12 @@ public class TableFieldMapperReflect {
         return null;
     }
 
+    /**
+     * 布尔值解析器（支持非标准布尔值转换）
+     *
+     * @param value 待解析的字符串值
+     * @return 解析后的布尔值（非"true"/"false"时会记录警告）
+     */
     private static boolean parseBoolean(String value) {
         boolean result = Boolean.parseBoolean(value);
         if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {

@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-;
 
 /**
- * pdf 表格解析
+ * pdf 表格解析工具类，提供从PDF文档中提取并处理表格数据的功能
  *
  * @author YuanJie
  * @ClassName Demo
- * @description: TODO
+ * @description: 本类通过解析PDF文档结构，识别表格数据并进行结构化处理，支持多线程环境下的表格解析操作
  * @date 2025/2/27 15:36
  */
 @Slf4j
@@ -37,8 +36,9 @@ public class PdfTableExtractor {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     /**
      * 公开解析方法
-     * 程序入口，处理PDF文档表格解析任务
+     * 程序入口，处理PDF文档表格解析任务。负责初始化授权、加载文档，并协调多页面处理流程
      *
+     * @param path 需要解析的PDF文件路径，要求是有效的本地文件系统路径
      * @throws IOException 当发生文件读写异常或文档操作异常时抛出
      *                     具体可能发生在：
      *                     - 文件路径无效或权限不足
@@ -63,10 +63,12 @@ public class PdfTableExtractor {
     }
 
 
+
     /**
-     * 处理页面中的表格数据
+     * 处理页面中的表格数据。通过表格吸收器获取页面内所有表格对象，
+     * 并协调后续的表格处理、数据清洗和结果映射流程
      *
-     * @param page 需要处理的页面对象，包含待解析的页面内容
+     * @param page 需要处理的PDF页面对象，包含文本布局和表格结构信息
      */
     private static void processPageTables(Page page) {
 
@@ -98,12 +100,15 @@ public class PdfTableExtractor {
 
     /**
      * 处理单个表格数据，将表格内容拼接为字符串并记录日志
+     *      * 处理单个表格数据结构。将表格的行列数据转换为带格式的文本表示，
+     *      * 使用管道符分隔列，换行符分隔行
      * 函数在多线程环境下运行，通过使用局部变量保障线程安全。处理过程包括：
      * 1. 初始化表格内容缓冲区
      * 2. 遍历表格行和单元格
      * 3. 处理单元格内容并拼接表格结构符号
      *
-     * @param table 需要处理的表格对象，包含行和单元格数据
+     * @param table 需要处理的表格对象，包含完整的行列结构数据
+     * @return StringBuilder 包含格式化后的表格文本内容，返回null表示无有效数据
      */
     private static StringBuilder processSingleTable(AbsorbedTable table) {
         // 多线程，避免线程安全问题。多线程表格解析
@@ -135,10 +140,12 @@ public class PdfTableExtractor {
 
 
     /**
-     * 处理单元格文本内容并聚合到表格上下文中
+     * 处理单元格文本内容。聚合单元格内所有文本段落到表格上下文中，
+     * 保留原始文本顺序和段落结构
      *
-     * @param cell         被处理的单元格对象，包含文本片段集合
-     * @param tableContext 用于存储聚合后文本内容的字符串构建器
+     * @param cell         PDF表格单元格对象，包含文本片段集合
+     * @param tableContext 用于存储聚合后文本内容的字符串构建器，
+     *                     append操作会直接修改该对象状态
      */
     private static void processCellContext(AbsorbedCell cell, StringBuilder tableContext) {
         // 获取并校验单元格文本片段集合
@@ -157,7 +164,13 @@ public class PdfTableExtractor {
             }
         }
     }
-
+    /**
+     * 执行表格数据清洗操作。包括：
+     * 1. 移除所有空白字符和换行符
+     * 2. 在数据首尾添加表格标记用于后续识别
+     *
+     * @param builder 包含原始表格数据的字符串构建器，要求非空
+     */
     private static void cleanData(StringBuilder builder) {
         Objects.requireNonNull(builder, "StringBuilder must not be null");
 
