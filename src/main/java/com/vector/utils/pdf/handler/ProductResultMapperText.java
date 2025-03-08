@@ -1,7 +1,8 @@
-package com.vector.handler;
+package com.vector.utils.pdf.handler;
 
 import com.vector.utils.pdf.reflect.TableFieldMapperReflect;
 import com.vector.utils.pdf.entity.ProductInfo;
+import com.vector.utils.pdf.StringEscapeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.vector.utils.pdf.TextParsingResultMapper;
@@ -43,7 +44,13 @@ public class ProductResultMapperText extends TextParsingResultMapper {
             while (matcher.find()) {
                 String key = matcher.group(1).trim();
                 String value = matcher.group(2).trim();
-
+                
+                // 执行内容转义处理，防止注入攻击
+                // 对键使用HTML转义（防止XSS攻击）
+                key = StringEscapeUtil.escapeHtml(key);
+                // 对值使用上下文感知的转义（根据内容特征选择合适的转义方式）
+                value = StringEscapeUtil.escapeByContext(value, StringEscapeUtil.ContextType.HTML);
+                
                 // 使用注解方式映射字段
                 TableFieldMapperReflect.mapFieldByAnnotation(productInfo, key, value, FIELD_CACHE, DATE_FORMAT);
             }
@@ -63,11 +70,11 @@ public class ProductResultMapperText extends TextParsingResultMapper {
 
     @Override
     protected boolean startWith(String str) {
-        return str.startsWith("单位|xxxxx1111|");
+        return str.startsWith("入职申请表|单位|");
     }
 
     @Override
     protected boolean endWith(String str) {
-        return str.endsWith("酷酷酷酷酷酷酷酷|");
+        return str.endsWith("声断恒山之浦。|");
     }
 }

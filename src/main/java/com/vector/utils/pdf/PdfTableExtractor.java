@@ -29,11 +29,31 @@ public class PdfTableExtractor {
     /**
      * 表格标记
      */
-    protected static final String TABLE_MARK = "0x1315749";
+    public static final String TABLE_MARK = "0x1315749";
     /**
      * 正则去除空格和换行符的正则表达式
      */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+    
+    /**
+     * 表格批处理器实例
+     */
+    private static volatile TableBatchProcessor batchProcessor;
+    
+    /**
+     * 获取表格批处理器实例（懒加载）
+     */
+    private static TableBatchProcessor getBatchProcessor() {
+        if (batchProcessor == null) {
+            synchronized (PdfTableExtractor.class) {
+                if (batchProcessor == null) {
+                    batchProcessor = new TableBatchProcessor();
+                }
+            }
+        }
+        return batchProcessor;
+    }
+    
     /**
      * 公开解析方法
      * 程序入口，处理PDF文档表格解析任务。负责初始化授权、加载文档，并协调多页面处理流程
@@ -52,11 +72,16 @@ public class PdfTableExtractor {
         try (FileInputStream fileStream = new FileInputStream(path);
              Document pdfDocument = new Document(fileStream)) {
 
-            // 创建表格处理器实例
             // 遍历文档所有页面进行表格处理
-            for (Page page : pdfDocument.getPages()) {
-                processPageTables(page);
+            for (int i = 1; i <= pdfDocument.getPages().size(); i++) {
+                Page page = pdfDocument.getPages().get_Item(i);
+                processPageTables(page, i);
             }
+            
+            // 提交剩余的表格并关闭批处理器
+            getBatchProcessor().submitBatchTask();
+            getBatchProcessor().shutdown();
+            
         } catch (IOException e) {
             log.error("解析异常：{}", e.getMessage());
         }
@@ -69,8 +94,9 @@ public class PdfTableExtractor {
      * 并协调后续的表格处理、数据清洗和结果映射流程
      *
      * @param page 需要处理的PDF页面对象，包含文本布局和表格结构信息
+     * @param pageIndex 页码索引
      */
-    private static void processPageTables(Page page) {
+    private static void processPageTables(Page page, int pageIndex) {
 
         // 创建表格扫描器并解析页面内容
         // 注意：可调用tableAbsorber.removeAllTables()清理残留表格数据
@@ -79,30 +105,8 @@ public class PdfTableExtractor {
         List<AbsorbedTable> tables = tableAbsorber.getTableList();
         if (CollectionUtils.isEmpty(tables)) return;
 
-        // 迭代处理所有解析到的表格
-        for (AbsorbedTable table : tables) {
-            StringBuilder builder = processSingleTable(table);
-            if (builder == null) continue;
-            // 数据清洗
-            cleanData(builder);
-            // 将解析结果传递给映射处理器
-            parsingMapping(builder);
-        }
-
-    }
-
-    /**
-     * 处理表格数据，将解析结果传递给映射处理器进行处理
-     * @param builder
-     */
-    private static void parsingMapping(StringBuilder builder) {
-        for (TextParsingResultMapper handler : TextParsingResultMapper.getHandlers()) {
-            try {
-                handler.processTable(builder);
-            } catch (Exception e) {
-                log.error("表格处理失败,内容: {},原因: {}", builder, e.getMessage());
-            }
-        }
+        // 将表格添加到批处理器
+        getBatchProcessor().addPageTables(pageIndex, tables);
     }
 
     /**
@@ -117,7 +121,7 @@ public class PdfTableExtractor {
      * @param table 需要处理的表格对象，包含完整的行列结构数据
      * @return StringBuilder 包含格式化后的表格文本内容，返回null表示无有效数据
      */
-    private static StringBuilder processSingleTable(AbsorbedTable table) {
+    public static StringBuilder processSingleTable(AbsorbedTable table) {
         // 多线程，避免线程安全问题。多线程表格解析
         // 缓存行集合
         List<AbsorbedRow> rows = table.getRowList();
@@ -164,10 +168,16 @@ public class PdfTableExtractor {
             /*
              * 聚合单元格内所有文本样式片段：
              * 1. 遍历段落中的每个文本片段
-             * 2. 将文本内容追加到表格上下文
+             * 2. 对文本内容进行转义处理
+             * 3. 将安全的文本内容追加到表格上下文
              */
             for (TextSegment seg : fragment.getSegments()) {
-                tableContext.append(seg.getText());
+                // 获取原始文本
+                String text = seg.getText();
+                // 执行转义处理（使用PLAIN上下文，保留基本格式）
+                String safeText = StringEscapeUtil.escapeByContext(text, StringEscapeUtil.ContextType.PLAIN);
+                // 添加到表格上下文
+                tableContext.append(safeText);
             }
         }
     }
@@ -178,7 +188,7 @@ public class PdfTableExtractor {
      *
      * @param builder 包含原始表格数据的字符串构建器，要求非空
      */
-    private static void cleanData(StringBuilder builder) {
+    public static void cleanData(StringBuilder builder) {
         Objects.requireNonNull(builder, "StringBuilder must not be null");
 
         // 删除空格和换行符（使用预编译正则）
