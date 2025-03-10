@@ -60,7 +60,7 @@ public class TableBatchProcessor {
     /**
      * 矢量特征维度
      */
-    private static final int VECTOR_DIMENSION = 32;
+    private static final int VECTOR_DIMENSION = 16;
 
     /**
      * 批处理线程池
