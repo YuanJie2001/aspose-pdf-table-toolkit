@@ -46,12 +46,12 @@ public class TableBatchProcessor {
      * 异常检测阈值（连续重复表格数量）
      */
     private static final int DUPLICATE_TABLE_THRESHOLD = 5;
-    
+
     /**
      * 列标识前缀
      */
     private static final String COLUMN_PREFIX = "col:";
-    
+
     /**
      * 最大缓存条目数
      */
@@ -306,15 +306,15 @@ public class TableBatchProcessor {
         if (str1 == null || str2 == null) {
             throw new IllegalArgumentException("输入字符串不能为空");
         }
-        
+
         // 将字符串转换为特征向量
         double[] vector1 = stringToVector(str1);
         double[] vector2 = stringToVector(str2);
-        
+
         // 计算余弦相似度
         return cosineSimilarity(vector1, vector2);
     }
-    
+
     /**
      * 将字符串转换为特征向量
      *
@@ -324,27 +324,27 @@ public class TableBatchProcessor {
     private double[] stringToVector(String str) {
         // 初始化特征向量
         double[] vector = new double[VECTOR_DIMENSION];
-        
+
         // 创建字符频率映射
         Map<Character, Integer> charFrequency = new HashMap<>();
-        
+
         // 统计字符频率
         for (char c : str.toCharArray()) {
             charFrequency.put(c, charFrequency.getOrDefault(c, 0) + 1);
         }
-        
+
         // 将字符频率映射到特征向量
         for (char c : charFrequency.keySet()) {
             int index = Math.abs(c) % VECTOR_DIMENSION;
             vector[index] += charFrequency.get(c);
         }
-        
+
         // 归一化向量
         normalizeVector(vector);
-        
+
         return vector;
     }
-    
+
     /**
      * 归一化向量
      *
@@ -352,13 +352,13 @@ public class TableBatchProcessor {
      */
     private void normalizeVector(double[] vector) {
         double magnitude = 0.0;
-        
+
         // 计算向量模长
         for (double value : vector) {
             magnitude += value * value;
         }
         magnitude = Math.sqrt(magnitude);
-        
+
         // 归一化向量
         if (magnitude > 0) {
             for (int i = 0; i < vector.length; i++) {
@@ -366,7 +366,7 @@ public class TableBatchProcessor {
             }
         }
     }
-    
+
     /**
      * 计算余弦相似度
      *
@@ -378,20 +378,20 @@ public class TableBatchProcessor {
         if (vector1.length != vector2.length) {
             throw new IllegalArgumentException("向量维度不匹配");
         }
-        
+
         double dotProduct = 0.0;
         double magnitude1 = 0.0;
         double magnitude2 = 0.0;
-        
+
         for (int i = 0; i < vector1.length; i++) {
             dotProduct += vector1[i] * vector2[i];
             magnitude1 += vector1[i] * vector1[i];
             magnitude2 += vector2[i] * vector2[i];
         }
-        
+
         magnitude1 = Math.sqrt(magnitude1);
         magnitude2 = Math.sqrt(magnitude2);
-        
+
         if (magnitude1 == 0.0 || magnitude2 == 0.0) {
             return 0.0;
         } else {
@@ -494,6 +494,8 @@ public class TableBatchProcessor {
             CacheEntry cacheEntry = entry.getValue();
             try {
                 double similarity = calculateSimilarity(cachedFingerprint, tableFingerprint);
+                // 跳过完全匹配的表格,排除自己
+                if (similarity >= 1.0) continue;
                 if (similarity >= TABLE_SIMILARITY_THRESHOLD && similarity > maxSimilarity) {
                     maxSimilarity = similarity;
                     matchedFingerprint = cachedFingerprint;

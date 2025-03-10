@@ -28,3 +28,7 @@ jar cvfm aspose-words-24.3-jdk17-crack.jar META-INF/MANIFEST.MF com/
 成功拦截：DROP TABLE类注入攻击，输出无害字符
 
 4.测试横向表头的表格
+
+5.考虑ServerLoader Java SPI取代SpringContext，让其适配非Spring框架
+
+6.重构余弦角相似匹配，让其至少17可用，强制用户废除8/11

@@ -36,7 +36,8 @@ public class ProductResultMapperText extends TextParsingResultMapper {
             ProductInfo productInfo = new ProductInfo();
             // 解析表格内容
             String content = tableContent.toString();
-
+            content = content.replace("入职申请表一|", "");
+            content = content.replace("入职申请表二|", "");
             // 使用正则表达式提取键值对
             Pattern pattern = Pattern.compile("([^|]+)\\|([^|]+)\\|");
             Matcher matcher = pattern.matcher(content);
@@ -71,7 +72,7 @@ public class ProductResultMapperText extends TextParsingResultMapper {
     @Override
     protected boolean startWith(String str) {
         // 同时支持入职申请表一和合并后的表格
-        return str.startsWith("入职申请表一|单位|");
+        return str.startsWith("入职申请表一|单位");
     }
 
     @Override
