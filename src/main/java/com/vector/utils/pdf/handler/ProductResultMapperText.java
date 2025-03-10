@@ -27,34 +27,16 @@ public class ProductResultMapperText extends TextParsingResultMapper {
 
     // 缓存字段映射关系，避免重复反射
     private static final Map<String, Field> FIELD_CACHE = TableFieldMapperAspect.loadFieldMappings(ProductInfo.class);
-    // 日期格式化器
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy");
+
 
     @Override
     protected void doMapping(StringBuilder tableContent) {
         try {
-            ProductInfo productInfo = new ProductInfo();
-            // 解析表格内容
-            String content = tableContent.toString();
-            content = content.replace("入职申请表一|", "");
-            content = content.replace("入职申请表二|", "");
-            // 使用正则表达式提取键值对
-            Pattern pattern = Pattern.compile("([^|]+)\\|([^|]+)\\|");
-            Matcher matcher = pattern.matcher(content);
-
-            while (matcher.find()) {
-                String key = matcher.group(1).trim();
-                String value = matcher.group(2).trim();
-                
-                // 执行内容转义处理，防止注入攻击
-                // 对键使用HTML转义（防止XSS攻击）
-                key = StringEscapeUtil.escapeHtml(key);
-                // 对值使用上下文感知的转义（根据内容特征选择合适的转义方式）
-                value = StringEscapeUtil.escapeByContext(value, StringEscapeUtil.ContextType.HTML);
-                
-                // 使用注解方式映射字段
-                TableFieldMapperAspect.mapFieldByAnnotation(productInfo, key, value, FIELD_CACHE, DATE_FORMAT);
-            }
+            // 清理和预处理表格内容
+            String content = cleanTableContent(tableContent);
+            
+            // 提取键值对并映射到对象
+            ProductInfo productInfo = super.mapToEntity(content, ProductInfo.class);
 
             // 设置创建时间
             productInfo.setCreateAt(new Date());
@@ -68,16 +50,31 @@ public class ProductResultMapperText extends TextParsingResultMapper {
             throw new RuntimeException(e);
         }
     }
+    
+    /**
+     * 清理和预处理表格内容
+     * 
+     * @param tableContent 原始表格内容
+     * @return 处理后的内容字符串
+     */
+    private String cleanTableContent(StringBuilder tableContent) {
+        String content = tableContent.toString();
+        content = content.replace("入职申请表一|", "");
+        content = content.replace("入职申请表二|", "");
+        return content;
+    }
+    
+
 
     @Override
     protected boolean startWith(String str) {
-        // 同时支持入职申请表一和合并后的表格
+        // 同时支持表一和合并后的表格
         return str.startsWith("入职申请表一|单位");
     }
 
     @Override
     protected boolean endWith(String str) {
-        // 同时支持入职申请表二的结尾和原有结尾
+        // 同时支持表二的结尾和合并后结尾
         return str.endsWith("声断恒山之浦。|");
     }
 }

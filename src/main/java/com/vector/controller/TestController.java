@@ -19,6 +19,7 @@ public class TestController {
     @RequestMapping("/hello")
     public String hello(){
         String path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\入职申请表.pdf";
+//        path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\横向表头.pdf";
         PdfTableExtractor.tableAnalyze(path);
         return "hello";
     }

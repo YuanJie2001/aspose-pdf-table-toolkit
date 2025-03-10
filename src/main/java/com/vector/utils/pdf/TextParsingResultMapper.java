@@ -1,13 +1,18 @@
 package com.vector.utils.pdf;
 
 import com.vector.utils.SpringContextUtil;
+import com.vector.utils.pdf.aspect.TableFieldMapperAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 解析内容映射到结构化对象
@@ -23,6 +28,10 @@ public abstract class TextParsingResultMapper {
 
     // 改为非静态成员，由Spring管理生命周期
     private static volatile List<TextParsingResultMapper> handlerCache;
+    // 键值对提取正则表达式
+    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]+)\\|");
+    // 日期格式化器
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy");
 
     /**
      * 获取所有处理器实现（线程安全初始化）
@@ -111,4 +120,66 @@ public abstract class TextParsingResultMapper {
         return startWith(str) && endWith(str);
     }
 
+
+    /**
+     * 提取键值对并映射到ProductInfo对象
+     *
+     * @param content 预处理后的内容
+     * @param clazz 待填充的产品信息对象
+     * TODO移除缓存map
+     */
+    protected <V> V mapToEntity(String content, Class<V> clazz) {
+        Matcher matcher = KEY_VALUE_PATTERN.matcher(content);
+        V target = null;
+        while (matcher.find()) {
+            String key = matcher.group(1).trim();
+            String value = matcher.group(2).trim();
+
+            // 执行安全转义处理
+            key = escapeKey(key);
+            value = escapeValue(value);
+
+            // 映射字段到对象
+            Map<String, Field> loadFieldMappings = TableFieldMapperAspect.loadFieldMappings(clazz);
+            try {
+                target = clazz.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            mapField(target, loadFieldMappings, key, value);
+        }
+        return target;
+    }
+
+    /**
+     * 对键进行安全转义处理
+     *
+     * @param key 原始键
+     * @return 转义后的键
+     */
+    protected String escapeKey(String key) {
+        return StringEscapeUtil.escapeHtml(key);
+    }
+
+    /**
+     * 对值进行上下文感知的安全转义处理
+     *
+     * @param value 原始值
+     * @return 转义后的值
+     */
+    protected String escapeValue(String value) {
+        return StringEscapeUtil.escapeByContext(value, StringEscapeUtil.ContextType.HTML);
+    }
+
+    /**
+     * 将键值对映射到对象字段
+     *
+     * @param target 目标类
+     * @param mapCache 字段映射缓存
+     * @param key 字段键名
+     * @param value 字段值
+     */
+    protected void mapField(Object target, Map<String, Field> mapCache, String key, String value) {
+        TableFieldMapperAspect.mapFieldByAnnotation(target, key, value, mapCache, DATE_FORMAT);
+    }
 }

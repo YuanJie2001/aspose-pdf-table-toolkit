@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2025/3/5
  */
 @Slf4j
-public class TableFieldMapperAspect {
+public class TableFieldMapperAspect <V>{
 
     // 缓存各个类的字段映射关系，避免重复反射
     private static final Map<Class<?>, Map<String, Field>> CLASS_FIELD_CACHE = new ConcurrentHashMap<>();
@@ -33,7 +33,7 @@ public class TableFieldMapperAspect {
      * @param clazz 需要加载映射关系的目标类
      * @return 映射关系Map，结构为[表字段名 -> 对应的Field对象]
      */
-    public static Map<String, Field> loadFieldMappings(Class<?> clazz) {
+    public static <V> Map<String, Field> loadFieldMappings(Class<V> clazz) {
         return CLASS_FIELD_CACHE.computeIfAbsent(clazz, cls -> {
             Map<String, Field> fieldMap = new HashMap<>();
             Field[] fields = cls.getDeclaredFields();
