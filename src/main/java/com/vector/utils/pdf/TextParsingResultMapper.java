@@ -68,21 +68,13 @@ public abstract class TextParsingResultMapper {
      */
     public final void processTable(StringBuilder sb) {
         // 执行标准处理流程
-        if (validateTableStructure(sb) && shouldHandle(sb)) {
+        if (shouldHandle(sb)) {
             log.info("解析结果：{}", sb);
             doMapping(sb);// 执行映射
             postProcess(); // 钩子方法调用
         }
 
 
-    }
-    /**
-     * 清理表格内容中的特殊标记
-     * 删除开头和结尾的TABLE_MARK标记（各删除PdfTableExtractor.TABLE_MARK.length()长度）
-     */
-    private void removeMagicNumber(StringBuilder sb) {
-        sb.delete(0, PdfTableExtractor.TABLE_MARK.length());
-        sb.delete(sb.length() - PdfTableExtractor.TABLE_MARK.length(), sb.length());
     }
 
     /**
@@ -101,22 +93,6 @@ public abstract class TextParsingResultMapper {
      * 用于判断是否处理当前表格内容
      */
     protected abstract boolean endWith(String str);
-
-
-    /**
-     * 验证表格结构有效性
-     * 检查是否包含标准标记头尾，验证通过后清理标记
-     *
-     * @return true表示具有有效的表格结构
-     */
-    private boolean validateTableStructure(StringBuilder sb) {
-        String str = sb.toString();
-        if (str.startsWith(PdfTableExtractor.TABLE_MARK) && str.endsWith(PdfTableExtractor.TABLE_MARK)) {
-            removeMagicNumber(sb);
-            return true;
-        }
-        return false;
-    }
 
     /**
      * 后处理钩子方法（可选扩展点）

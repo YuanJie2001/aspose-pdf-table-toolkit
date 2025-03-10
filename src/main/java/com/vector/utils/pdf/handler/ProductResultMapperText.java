@@ -1,6 +1,6 @@
 package com.vector.utils.pdf.handler;
 
-import com.vector.utils.pdf.reflect.TableFieldMapperReflect;
+import com.vector.utils.pdf.aspect.TableFieldMapperAspect;
 import com.vector.utils.pdf.entity.ProductInfo;
 import com.vector.utils.pdf.StringEscapeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class ProductResultMapperText extends TextParsingResultMapper {
 
     // 缓存字段映射关系，避免重复反射
-    private static final Map<String, Field> FIELD_CACHE = TableFieldMapperReflect.loadFieldMappings(ProductInfo.class);
+    private static final Map<String, Field> FIELD_CACHE = TableFieldMapperAspect.loadFieldMappings(ProductInfo.class);
     // 日期格式化器
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy");
 
@@ -52,7 +52,7 @@ public class ProductResultMapperText extends TextParsingResultMapper {
                 value = StringEscapeUtil.escapeByContext(value, StringEscapeUtil.ContextType.HTML);
                 
                 // 使用注解方式映射字段
-                TableFieldMapperReflect.mapFieldByAnnotation(productInfo, key, value, FIELD_CACHE, DATE_FORMAT);
+                TableFieldMapperAspect.mapFieldByAnnotation(productInfo, key, value, FIELD_CACHE, DATE_FORMAT);
             }
 
             // 设置创建时间
@@ -70,7 +70,7 @@ public class ProductResultMapperText extends TextParsingResultMapper {
 
     @Override
     protected boolean startWith(String str) {
-        return str.startsWith("入职申请表|单位|");
+        return str.startsWith("入职申请表一|单位|");
     }
 
     @Override

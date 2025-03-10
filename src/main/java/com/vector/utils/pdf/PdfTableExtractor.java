@@ -26,10 +26,7 @@ public class PdfTableExtractor {
      * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
      */
     private static final int ESTIMATED_CELL_SIZE = 50;
-    /**
-     * 表格标记
-     */
-    public static final String TABLE_MARK = "0x1315749";
+
     /**
      * 正则去除空格和换行符的正则表达式
      */
@@ -195,9 +192,5 @@ public class PdfTableExtractor {
         String cleaned = WHITESPACE_PATTERN.matcher(builder.toString()).replaceAll("");
         builder.setLength(0);
         builder.append(cleaned);
-
-        // 添加标记
-        builder.insert(0, TABLE_MARK);
-        builder.append(TABLE_MARK);
     }
 }

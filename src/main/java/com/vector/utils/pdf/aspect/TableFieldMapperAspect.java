@@ -1,4 +1,4 @@
-package com.vector.utils.pdf.reflect;
+package com.vector.utils.pdf.aspect;
 
 import com.vector.utils.pdf.annotation.TableFieldMap;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2025/3/5
  */
 @Slf4j
-public class TableFieldMapperReflect {
+public class TableFieldMapperAspect {
 
     // 缓存各个类的字段映射关系，避免重复反射
     private static final Map<Class<?>, Map<String, Field>> CLASS_FIELD_CACHE = new ConcurrentHashMap<>();

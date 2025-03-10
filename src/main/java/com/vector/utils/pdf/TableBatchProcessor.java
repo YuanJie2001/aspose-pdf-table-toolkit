@@ -81,7 +81,6 @@ public class TableBatchProcessor {
     }
 
 
-
     /**
      * 添加表格到批处理队列
      *
@@ -185,7 +184,7 @@ public class TableBatchProcessor {
      */
     private String generateTableFingerprint(StringBuilder tableContent) {
         // 简单实现：使用表格前10个字符作为指纹
-        int length = Math.min(tableContent.length(), 10 + PdfTableExtractor.TABLE_MARK.length());
+        int length = Math.min(tableContent.length(), 10);
         return tableContent.substring(0, length);
     }
 
@@ -201,7 +200,7 @@ public class TableBatchProcessor {
         if (crossPageTableCache.isEmpty()) {
             return false;
         }
-        
+
         // 基于指纹进行相似度比较
         for (Map.Entry<String, StringBuilder> entry : crossPageTableCache.entrySet()) {
             String cachedFingerprint = entry.getKey();
@@ -238,11 +237,9 @@ public class TableBatchProcessor {
             StringBuilder cachedTable = crossPageTableCache.get(matchedFingerprint);
             // 移除标记后合并
             String content = tableContent.toString();
-            content = content.substring(PdfTableExtractor.TABLE_MARK.length(),
-                    content.length() - PdfTableExtractor.TABLE_MARK.length());
-            cachedTable.insert(cachedTable.length() - PdfTableExtractor.TABLE_MARK.length(), content);
+            cachedTable.insert(cachedTable.length(), content);
             log.info("合并跨页表格: {}", matchedFingerprint);
-            
+
             // 更新缓存中的表格内容
             crossPageTableCache.put(matchedFingerprint, cachedTable);
         } else {
@@ -322,41 +319,14 @@ public class TableBatchProcessor {
     private void processCrossPageTables() {
         if (!crossPageTableCache.isEmpty()) {
             log.info("处理跨页表格缓存: {} 个表格", crossPageTableCache.size());
-            
+
             // 创建一个新的列表来存储跨页表格
             List<StringBuilder> crossPageTables = new ArrayList<>();
-            
-            // 遍历缓存中的所有表格，确保每个表格都有正确的标记
-            for (StringBuilder tableContent : crossPageTableCache.values()) {
-                // 确保表格内容有正确的标记
-                if (!tableContent.toString().startsWith(PdfTableExtractor.TABLE_MARK) ||
-                    !tableContent.toString().endsWith(PdfTableExtractor.TABLE_MARK)) {
-                    // 如果标记不完整，重新添加标记
-                    String content = tableContent.toString();
-                    // 移除可能存在的部分标记
-                    if (content.startsWith(PdfTableExtractor.TABLE_MARK)) {
-                        content = content.substring(PdfTableExtractor.TABLE_MARK.length());
-                    }
-                    if (content.endsWith(PdfTableExtractor.TABLE_MARK)) {
-                        content = content.substring(0, content.length() - PdfTableExtractor.TABLE_MARK.length());
-                    }
-                    // 重新构建带标记的内容
-                    StringBuilder newContent = new StringBuilder(PdfTableExtractor.TABLE_MARK)
-                            .append(content)
-                            .append(PdfTableExtractor.TABLE_MARK);
-                    crossPageTables.add(newContent);
-                } else {
-                    crossPageTables.add(tableContent);
-                }
-            }
-            
             // 将跨页表格添加到批处理队列
-            if (!crossPageTables.isEmpty()) {
-                List<List<StringBuilder>> batchTables = new ArrayList<>();
-                batchTables.add(crossPageTables);
-                processBatchTables(batchTables);
-            }
-            
+            List<List<StringBuilder>> batchTables = new ArrayList<>();
+            batchTables.add(crossPageTables);
+            processBatchTables(batchTables);
+
             // 清空缓存
             crossPageTableCache.clear();
         }
