@@ -280,17 +280,12 @@ public class TableBatchProcessor {
         AtomicInteger counter = tableTypeCounter.computeIfAbsent(tableFingerprint, k -> new AtomicInteger(0));
         int count = counter.incrementAndGet();
 
-        // 如果连续出现超过阈值，则判定为重复表格
-        if (count > DUPLICATE_TABLE_THRESHOLD) {
-            return true;
-        }
-
         // 定期重置计数器（避免长期累积）
         if (count > DUPLICATE_TABLE_THRESHOLD * 2) {
             counter.set(0);
         }
-
-        return false;
+        // 如果连续出现超过阈值，则判定为重复表格
+        return count > DUPLICATE_TABLE_THRESHOLD;
     }
 
     /**
