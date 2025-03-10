@@ -88,6 +88,7 @@ public abstract class TextParsingResultMapper {
      * 用于判断是否处理当前表格内容
      */
     protected abstract boolean startWith(String str);
+
     /**
      * 结束匹配规则（防御性校验）
      * 用于判断是否处理当前表格内容
@@ -100,6 +101,7 @@ public abstract class TextParsingResultMapper {
      */
     protected void postProcess() {
     }
+
     /**
      * 判断是否应该处理当前内容
      * 综合子类定义的起始/结束匹配规则
@@ -108,4 +110,5 @@ public abstract class TextParsingResultMapper {
         String str = sb.toString();
         return startWith(str) && endWith(str);
     }
+
 }

@@ -70,11 +70,13 @@ public class ProductResultMapperText extends TextParsingResultMapper {
 
     @Override
     protected boolean startWith(String str) {
+        // 同时支持入职申请表一和合并后的表格
         return str.startsWith("入职申请表一|单位|");
     }
 
     @Override
     protected boolean endWith(String str) {
+        // 同时支持入职申请表二的结尾和原有结尾
         return str.endsWith("声断恒山之浦。|");
     }
 }

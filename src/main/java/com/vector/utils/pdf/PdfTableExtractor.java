@@ -26,7 +26,6 @@ public class PdfTableExtractor {
      * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
      */
     private static final int ESTIMATED_CELL_SIZE = 50;
-
     /**
      * 正则去除空格和换行符的正则表达式
      */
