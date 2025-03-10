@@ -32,3 +32,5 @@ jar cvfm aspose-words-24.3-jdk17-crack.jar META-INF/MANIFEST.MF com/
 5.考虑ServerLoader Java SPI取代SpringContext，让其适配非Spring框架
 
 6.重构余弦角相似匹配，让其至少17可用，强制用户废除8/11
+
+7.优化映射器逻辑，减少复杂度，提高性能
