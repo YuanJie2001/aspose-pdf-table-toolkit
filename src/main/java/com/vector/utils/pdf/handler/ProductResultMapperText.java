@@ -1,18 +1,10 @@
 package com.vector.utils.pdf.handler;
 
-import com.vector.utils.pdf.aspect.TableFieldMapperAspect;
 import com.vector.utils.pdf.entity.ProductInfo;
-import com.vector.utils.pdf.StringEscapeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.vector.utils.pdf.TextParsingResultMapper;
-
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 映射到ProductInfo对象
@@ -24,10 +16,6 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 public class ProductResultMapperText extends TextParsingResultMapper {
-
-    // 缓存字段映射关系，避免重复反射
-    private static final Map<String, Field> FIELD_CACHE = TableFieldMapperAspect.loadFieldMappings(ProductInfo.class);
-
 
     @Override
     protected void doMapping(StringBuilder tableContent) {
