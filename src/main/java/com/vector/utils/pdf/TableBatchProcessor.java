@@ -611,7 +611,14 @@ public class TableBatchProcessor {
         submitBatchTask();
         // 处理跨页表格缓存中的表格
         processCrossPageTables();
+        // 等待队列中的任务全部处理完成
+        while (!tableBufferQueue.isEmpty()) {
+            log.info("等待队列中的任务处理完成，剩余任务数: {}", tableBufferQueue.size());
+            // 再次提交批处理任务，确保队列中的任务都被处理
+            submitBatchTask();
+        }
         // 关闭线程池
+        log.info("所有任务已提交，开始关闭线程池");
         executorService.shutdown();
         cacheCleanupScheduler.shutdown();
         try {
@@ -622,10 +629,12 @@ public class TableBatchProcessor {
                 cacheCleanupScheduler.shutdownNow();
             }
         } catch (InterruptedException e) {
+            log.error("等待线程池关闭时被中断: {}", e.getMessage());
             executorService.shutdownNow();
             cacheCleanupScheduler.shutdownNow();
             Thread.currentThread().interrupt();
         }
+        log.info("线程池已成功关闭");
     }
 
     /**
