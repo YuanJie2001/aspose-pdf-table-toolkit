@@ -612,9 +612,12 @@ public class TableBatchProcessor {
         // 处理跨页表格缓存中的表格
         processCrossPageTables();
         // 等待队列中的任务全部处理完成
+        long lastLogTime = System.currentTimeMillis();
         while (!tableBufferQueue.isEmpty()) {
-            log.info("等待队列中的任务处理完成，剩余任务数: {}", tableBufferQueue.size());
-            // 再次提交批处理任务，确保队列中的任务都被处理
+            if (System.currentTimeMillis() - lastLogTime >= 5000) {
+                log.info("等待队列中的任务处理完成，剩余任务数: {}", tableBufferQueue.size());
+                lastLogTime = System.currentTimeMillis();
+            }
             submitBatchTask();
         }
         // 关闭线程池
