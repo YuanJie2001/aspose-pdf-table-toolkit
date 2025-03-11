@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
  * @date 2025/3/5 14:06
  */
 @Slf4j
-public abstract class TextParsingResultMapper {
+public abstract class AbstractTextMappingTemplate {
 
     // 改为非静态成员，由Spring管理生命周期
-    private static volatile List<TextParsingResultMapper> handlerCache;
+    private static volatile List<AbstractTextMappingTemplate> handlerCache;
     // 键值对提取正则表达式 - 修改为支持复杂值的模式
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]*?)(?=\\|[^|]+\\||$)");
     // 日期格式化器
@@ -40,10 +40,10 @@ public abstract class TextParsingResultMapper {
      * @return 不可修改的处理器列表（Spring容器管理的bean实例）
      * @throws IllegalStateException 当未找到任何有效处理器时抛出
      */
-    public static List<TextParsingResultMapper> getHandlers() {
+    public static List<AbstractTextMappingTemplate> getHandlers() {
         // 双重检查锁实现线程安全初始化
         if (handlerCache == null) {
-            synchronized (TextParsingResultMapper.class) {
+            synchronized (AbstractTextMappingTemplate.class) {
                 if (handlerCache == null) {
                     // 延迟获取Spring上下文，确保容器初始化完成
                     ApplicationContext context = SpringContextUtil.getApplicationContext();
@@ -52,9 +52,9 @@ public abstract class TextParsingResultMapper {
                         return Collections.emptyList();
                     }
                     // 获取所有子类实现实例
-                    Map<String, TextParsingResultMapper> beans = context.getBeansOfType(TextParsingResultMapper.class);
+                    Map<String, AbstractTextMappingTemplate> beans = context.getBeansOfType(AbstractTextMappingTemplate.class);
                     log.info("找到 {} 个ParsingMappingHandler实现类", beans.size());
-                    List<TextParsingResultMapper> handlers = new ArrayList<>(beans.values());
+                    List<AbstractTextMappingTemplate> handlers = new ArrayList<>(beans.values());
                     // 防御性校验确保至少有一个处理器
                     if (handlers.isEmpty()) {
                         throw new IllegalStateException("未发现任何有效的表格映射处理器");

@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PdfTableExtractor {
+public class PdfTableParsingEngine {
     /**
      * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
      */

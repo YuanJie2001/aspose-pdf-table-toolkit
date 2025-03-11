@@ -3,7 +3,7 @@ package com.vector.utils.pdf.handler;
 import com.vector.utils.pdf.entity.ProductInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import com.vector.utils.pdf.TextParsingResultMapper;
+import com.vector.utils.pdf.AbstractTextMappingTemplate;
 import java.util.Date;
 
 /**
@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Slf4j
 @Component
-public class ProductResultMapperText extends TextParsingResultMapper {
+public class ProductInfoConverter extends AbstractTextMappingTemplate {
 
 
     @Override

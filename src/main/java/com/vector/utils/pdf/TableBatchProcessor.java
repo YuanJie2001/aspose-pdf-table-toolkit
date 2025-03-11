@@ -170,11 +170,11 @@ public class TableBatchProcessor {
         List<StringBuilder> processedTables = new ArrayList<>();
         for (AbsorbedTable table : tables) {
             // 处理单个表格
-            StringBuilder tableContent = PdfTableExtractor.processSingleTable(table);
+            StringBuilder tableContent = PdfTableParsingEngine.processSingleTable(table);
             if (tableContent == null) continue;
 
             // 数据清洗
-            PdfTableExtractor.cleanData(tableContent);
+            PdfTableParsingEngine.cleanData(tableContent);
 
             // 生成表格指纹
             String tableFingerprint = generateTableFingerprint(tableContent);
@@ -237,13 +237,13 @@ public class TableBatchProcessor {
      */
     private void processBatchTables(List<List<StringBuilder>> batchTables) {
         // 获取所有映射处理器
-        List<TextParsingResultMapper> handlers = TextParsingResultMapper.getHandlers();
+        List<AbstractTextMappingTemplate> handlers = AbstractTextMappingTemplate.getHandlers();
 
         // 处理每个表格
         for (List<StringBuilder> pageTables : batchTables) {
             for (StringBuilder tableContent : pageTables) {
                 // 调用映射处理器处理表格
-                for (TextParsingResultMapper handler : handlers) {
+                for (AbstractTextMappingTemplate handler : handlers) {
                     try {
                         handler.processTable(tableContent);
                     } catch (Exception e) {

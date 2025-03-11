@@ -5,6 +5,8 @@
 **使用SpringContext获取对象上下文**
 jar cvfm aspose-words-24.3-jdk17-crack.jar META-INF/MANIFEST.MF com/
 
+使用方式：在路径`src/main/java/com/vector/utils/pdf/handler`下，自定义映射处理器，继承TextParsingResultMapper类。
+
 # 待解决的问题清单
 
 ## 1.减少映射器调用次数。解析器按页分批次交付给映射处理器。收集一页的表格交给子线程映射处理。
