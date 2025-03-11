@@ -28,8 +28,8 @@ public abstract class TextParsingResultMapper {
 
     // 改为非静态成员，由Spring管理生命周期
     private static volatile List<TextParsingResultMapper> handlerCache;
-    // 键值对提取正则表达式
-    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]+)\\|");
+    // 键值对提取正则表达式 - 修改为支持复杂值的模式
+    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]*?)(?=\\|[^|]+\\||$)");
     // 日期格式化器
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy");
 
@@ -131,6 +131,18 @@ public abstract class TextParsingResultMapper {
     protected <V> V mapToEntity(String content, Class<V> clazz) {
         Matcher matcher = KEY_VALUE_PATTERN.matcher(content);
         V target = null;
+        
+        // 先创建目标对象实例
+        try {
+            target = clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("无法创建目标对象实例", e);
+        }
+        
+        // 加载字段映射关系（只需加载一次）
+        Map<String, Field> loadFieldMappings = TableFieldMapperAspect.loadFieldMappings(clazz);
+        
+        // 遍历所有匹配的键值对
         while (matcher.find()) {
             String key = matcher.group(1).trim();
             String value = matcher.group(2).trim();
@@ -140,13 +152,8 @@ public abstract class TextParsingResultMapper {
             value = escapeValue(value);
 
             // 映射字段到对象
-            Map<String, Field> loadFieldMappings = TableFieldMapperAspect.loadFieldMappings(clazz);
-            try {
-                target = clazz.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
             mapField(target, loadFieldMappings, key, value);
+            log.debug("映射字段: {} -> {}", key, value);
         }
         return target;
     }
