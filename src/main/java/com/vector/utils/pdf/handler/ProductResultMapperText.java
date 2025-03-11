@@ -17,6 +17,7 @@ import java.util.Date;
 @Component
 public class ProductResultMapperText extends TextParsingResultMapper {
 
+
     @Override
     protected void doMapping(StringBuilder tableContent) {
         try {

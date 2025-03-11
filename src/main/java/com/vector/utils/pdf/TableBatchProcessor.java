@@ -92,6 +92,7 @@ public class TableBatchProcessor {
      */
     private static final long CACHE_ENTRY_TTL = 5 * 60 * 1000; // 5分钟
 
+
     /**
      * 构造函数
      */
@@ -531,59 +532,6 @@ public class TableBatchProcessor {
         return mergedTable;
     }
 
-    /**
-     * 合并入职申请表一和入职申请表二
-     *
-     * @param currentTable 当前表格内容
-     * @param currentFormType 当前表格类型（入职申请表一或入职申请表二）
-     * @param targetFormType 目标表格类型（入职申请表二或入职申请表一）
-     * @return 合并后的表格内容
-     */
-    private StringBuilder mergeApplicationForms(StringBuilder currentTable, String currentFormType, String targetFormType) {
-        // 查找目标表格
-        CacheEntry targetEntry = null;
-        String targetFingerprint = null;
-
-        for (Map.Entry<String, CacheEntry> entry : crossPageTableCache.entrySet()) {
-            if (entry.getKey().contains(targetFormType)) {
-                targetEntry = entry.getValue();
-                targetFingerprint = entry.getKey();
-                break;
-            }
-        }
-
-        if (targetEntry == null) {
-            // 未找到目标表格，将当前表格放入缓存
-            log.info("未找到{}，将{}放入缓存等待合并", targetFormType, currentFormType);
-            return currentTable;
-        }
-
-        // 合并两个表格
-        StringBuilder mergedTable = new StringBuilder();
-
-        // 确保入职申请表一在前，入职申请表二在后
-        if (currentFormType.equals("入职申请表一")) {
-            mergedTable.append(currentTable);
-            mergedTable.append(targetEntry.content);
-        } else {
-            mergedTable.append(targetEntry.content);
-            mergedTable.append(currentTable);
-        }
-
-        log.info("成功合并{}和{}", "入职申请表一", "入职申请表二");
-
-        // 更新缓存
-        String newFingerprint = "入职申请表合并";
-        crossPageTableCache.put(newFingerprint, new CacheEntry(mergedTable));
-
-        // 移除旧的表格条目
-        if (targetFingerprint != null) {
-            crossPageTableCache.remove(targetFingerprint);
-        }
-
-        return mergedTable;
-    }
-
 
     /**
      * 判断是否为连续重复表格
@@ -605,6 +553,7 @@ public class TableBatchProcessor {
 
     /**
      * 关闭处理器
+     * 虚拟线程不需要关闭，因为虚拟线程会自动关闭
      */
     public void shutdown() {
         // 提交剩余的表格

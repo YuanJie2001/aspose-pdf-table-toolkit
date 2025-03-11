@@ -2,7 +2,9 @@ package com.vector.utils.pdf;
 
 import com.aspose.pdf.*;
 import com.vector.config.WordAuthLincense;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
@@ -21,6 +23,8 @@ import java.util.regex.Pattern;
  * @date 2025/2/27 15:36
  */
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class PdfTableExtractor {
     /**
      * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
@@ -30,26 +34,12 @@ public class PdfTableExtractor {
      * 正则去除空格和换行符的正则表达式
      */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-    
+
     /**
      * 表格批处理器实例
      */
-    private static volatile TableBatchProcessor batchProcessor;
-    
-    /**
-     * 获取表格批处理器实例（懒加载）
-     */
-    private static TableBatchProcessor getBatchProcessor() {
-        if (batchProcessor == null) {
-            synchronized (PdfTableExtractor.class) {
-                if (batchProcessor == null) {
-                    batchProcessor = new TableBatchProcessor();
-                }
-            }
-        }
-        return batchProcessor;
-    }
-    
+    private final TableBatchProcessor batchProcessor;
+
     /**
      * 公开解析方法
      * 程序入口，处理PDF文档表格解析任务。负责初始化授权、加载文档，并协调多页面处理流程
@@ -61,7 +51,7 @@ public class PdfTableExtractor {
      *                     - 文档加载/解析失败
      *                     - 资源关闭异常
      */
-    public static void tableAnalyze(String path) {
+    public void tableAnalyze(String path) {
         // 初始化文档处理授权许可
         WordAuthLincense.setAuthLicense();
         // 使用try-with-resources自动管理文件资源
@@ -73,16 +63,16 @@ public class PdfTableExtractor {
                 Page page = pdfDocument.getPages().get_Item(i);
                 processPageTables(page, i);
             }
-            
+
             // 提交剩余的表格并关闭批处理器
-            getBatchProcessor().submitBatchTask();
-            getBatchProcessor().shutdown();
-            
+            batchProcessor.submitBatchTask();
+            // 不再调用shutdown方法，避免关闭线程池
+            // batchProcessor.shutdown();
+
         } catch (IOException e) {
             log.error("解析异常：{}", e.getMessage());
         }
     }
-
 
 
     /**
@@ -92,7 +82,7 @@ public class PdfTableExtractor {
      * @param page 需要处理的PDF页面对象，包含文本布局和表格结构信息
      * @param pageIndex 页码索引
      */
-    private static void processPageTables(Page page, int pageIndex) {
+    private void processPageTables(Page page, int pageIndex) {
 
         // 创建表格扫描器并解析页面内容
         // 注意：可调用tableAbsorber.removeAllTables()清理残留表格数据
@@ -102,7 +92,7 @@ public class PdfTableExtractor {
         if (CollectionUtils.isEmpty(tables)) return;
 
         // 将表格添加到批处理器
-        getBatchProcessor().addPageTables(pageIndex, tables);
+        batchProcessor.addPageTables(pageIndex, tables);
     }
 
     /**
@@ -177,6 +167,7 @@ public class PdfTableExtractor {
             }
         }
     }
+
     /**
      * 执行表格数据清洗操作。包括：
      * 1. 移除所有空白字符和换行符

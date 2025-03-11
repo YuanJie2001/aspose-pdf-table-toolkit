@@ -16,11 +16,12 @@ import com.vector.utils.pdf.PdfTableExtractor;
 @RequiredArgsConstructor
 public class TestController {
 
+    private final PdfTableExtractor pdfTableExtractor;
     @RequestMapping("/hello")
     public String hello(){
         String path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\入职申请表.pdf";
 //        path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\横向表头.pdf";
-        PdfTableExtractor.tableAnalyze(path);
+        pdfTableExtractor.tableAnalyze(path);
         return "hello";
     }
 }
