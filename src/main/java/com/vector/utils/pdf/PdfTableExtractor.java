@@ -117,7 +117,7 @@ public class PdfTableExtractor {
      * @param table 需要处理的表格对象，包含完整的行列结构数据
      * @return StringBuilder 包含格式化后的表格文本内容，返回null表示无有效数据
      */
-    public static StringBuilder processSingleTable(AbsorbedTable table) {
+    protected static StringBuilder processSingleTable(AbsorbedTable table) {
         // 多线程，避免线程安全问题。多线程表格解析
         // 缓存行集合
         List<AbsorbedRow> rows = table.getRowList();
@@ -184,7 +184,7 @@ public class PdfTableExtractor {
      *
      * @param builder 包含原始表格数据的字符串构建器，要求非空
      */
-    public static void cleanData(StringBuilder builder) {
+    protected static void cleanData(StringBuilder builder) {
         Objects.requireNonNull(builder, "StringBuilder must not be null");
 
         // 删除空格和换行符（使用预编译正则）
