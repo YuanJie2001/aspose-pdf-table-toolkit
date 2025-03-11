@@ -1,7 +1,8 @@
 把生成的com文件，覆盖解压的aspose-word中，并重新打包
 
 **aspose属于商业产品，仅供学习研究使用**
-
+**引入虚拟线程，支持jdk21以上**
+**使用SpringContext获取对象上下文**
 jar cvfm aspose-words-24.3-jdk17-crack.jar META-INF/MANIFEST.MF com/
 
 # 待解决的问题清单
