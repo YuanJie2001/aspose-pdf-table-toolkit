@@ -1,5 +1,6 @@
 package com.vector.utils.pdf.entity;
 
+import com.aspose.slides.internal.oe.age;
 import com.vector.utils.pdf.annotation.TableFieldMap;
 import lombok.Data;
 
@@ -30,104 +31,104 @@ public class ProductInfo implements Serializable {
      */
     private Long fileId;
     /**
-     * 单位
+     * 姓名
      */
-    @TableFieldMap("单位")
-    private String unit;
+    @TableFieldMap("姓名")
+    private String name;
 
-    /**
-     * 信息名称
-     */
-    @TableFieldMap("信息名称")
-    private String title;
     /**
      * 时间
      */
     @TableFieldMap("时间")
     private Date pubDate;
     /**
-     * 密级
+     * 爱好
      */
-    @TableFieldMap("密级")
-    private String classified;
+    @TableFieldMap("爱好")
+    private String hobby;
+    /**
+     * 年龄
+     */
+    @TableFieldMap("年龄")
+    private Byte age;
 
     /**
-     * 信息主题
+     * 特长
      */
-    @TableFieldMap("信息主题")
+    @TableFieldMap("特长")
     private String theme;
 
     /**
-     * 信息种类 视频 音频 图片 实物 其它
+     * 专业技能
      */
-    @TableFieldMap("信息种类")
-    private String category;
+    @TableFieldMap("专业技能")
+    private String skill;
 
     /**
-     * 制品规格
+     * 项目经历
      */
-    @TableFieldMap("制品规格")
-    private String scales;
+    @TableFieldMap("项目经历")
+    private String exp;
 
     /**
-     * 使用语种
+     * 语言
      */
-    @TableFieldMap("使用语种")
+    @TableFieldMap("语言")
     private String lang;
 
     /**
-     * 使用方向 东部战略方向 南部 西部 北部 其他
+     * 专业方向
      */
-    @TableFieldMap("使用方向")
-    private String direction;
+    @TableFieldMap("专业方向")
+    private String major;
 
     /**
-     * 作战层级-多选 战略 战役 战术
+     * 投递方向
      */
-    @TableFieldMap("作战层级")
-    private String operLevel;
+    @TableFieldMap("投递方向")
+    private String sender;
 
     /**
-     * 作战阶段
+     * 投递原因
      */
-    @TableFieldMap("作战阶段")
-    private String stages;
+    @TableFieldMap("投递原因")
+    private String sendCase;
 
     /**
-     * 使用场景
+     * 个人爱好
      */
-    @TableFieldMap("使用场景")
-    private String scenes;
+    @TableFieldMap("个人爱好")
+    private String priHobby;
 
     /**
-     * 作战目的
+     * 出生日期
      */
-    @TableFieldMap("作战目的")
-    private String aim;
+    @TableFieldMap("出生日期")
+    private String birthDate;
 
     /**
-     * 目标对象及其心理特点
+     * 毕业学校
      */
-    @TableFieldMap("目标对象及其心理特点")
-    private String objectPsychology;
+    @TableFieldMap("毕业学校")
+    private String university;
 
     /**
-     * 谋略战法
+     * 期望年薪
      */
-    @TableFieldMap("谋略战法")
-    private String militaryStrategy;
+    @TableFieldMap("期望年薪")
+    private String salary;
 
     /**
-     * 投送平台
+     * 性别
      */
-    @TableFieldMap("投送平台")
-    private String deliveryPlatform;
+    @TableFieldMap("性别")
+    private String gender;
 
     /**
-     * 投送身份
+     * 联系方式
      */
-    @TableFieldMap("投送身份")
-    private String sendingIdentity;
+    @TableFieldMap("联系方式")
+    private String contact;
 
     /**
      * 预期效果
@@ -136,16 +137,16 @@ public class ProductInfo implements Serializable {
     private String intendedEffect;
 
     /**
-     * 风险评估
+     * 个人评价
      */
-    @TableFieldMap("风险评估")
-    private String riskAssessment;
+    @TableFieldMap("个人评价")
+    private String selfEvaluation;
 
     /**
-     * 创新内容
+     * 自我批评
      */
-    @TableFieldMap("创新内容")
-    private String innovativeContent;
+    @TableFieldMap("自我批评")
+    private String selfCriticism;
 
     /**
 //     * 信息内容

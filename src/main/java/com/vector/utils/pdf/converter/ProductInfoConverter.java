@@ -58,7 +58,7 @@ public class ProductInfoConverter extends AbstractTextMappingTemplate {
     @Override
     protected boolean startWith(String str) {
         // 同时支持表一和合并后的表格
-        return str.startsWith("入职申请表一|单位");
+        return str.startsWith("入职申请表一|姓名");
     }
 
     @Override
