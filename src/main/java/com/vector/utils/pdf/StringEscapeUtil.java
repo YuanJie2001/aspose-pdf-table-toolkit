@@ -29,10 +29,9 @@ public class StringEscapeUtil {
                     "\\u2605" +                // ★ 符号（Unicode码位：U+2605）
                     "\\u26AB" +                // ⚫ 符号（Unicode码位：U+26AA）
                     "\\u2611" +                // checkbox 符号（Unicode码位：U+2611）
+                    "\\uf052" +                //  符号（Unicode码位：U+uf052）
                     "]+"                       // 否定字符类结束
             );
-
-
     /**
      * SQL注入风险关键字
      */
