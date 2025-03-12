@@ -28,8 +28,8 @@ public abstract class AbstractTextMappingTemplate {
 
     // 改为非静态成员，由Spring管理生命周期
     private static volatile List<AbstractTextMappingTemplate> handlerCache;
-    // 键值对提取正则表达式 - 修改为支持复杂值的模式
-    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]*?)(?=\\|[^|]+\\||$)");
+    // 键值对提取正则表达式
+    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("([^|]+)\\|([^|]+)\\|");
     // 日期格式化器
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy");
 

@@ -209,7 +209,6 @@ public class TableBatchProcessor {
                     // 重新尝试添加
                     tableBufferQueue.put(processedTables);
                 }
-                log.info("队列解析内容为：{}", processedTables);
             } catch (InterruptedException e) {
                 log.error("添加表格到缓冲队列失败: {}", e.getMessage());
                 Thread.currentThread().interrupt();

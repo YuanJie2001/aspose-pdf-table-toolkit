@@ -17,7 +17,7 @@ import java.io.*;
  */
 @Deprecated
 public class PDFboxTable {
-    private static final String path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\入职申请表.pdf";
+    private static final String path = "C:\\Users\\YuanJie\\Desktop\\aspose-pdf-table-toolkit\\入职申请表.pdf";
 
     public static void main(String[] args) throws IOException {
         //加载PDF文件
