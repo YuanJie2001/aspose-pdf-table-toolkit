@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * 表格批处理器
@@ -31,6 +29,10 @@ public class TableBatchProcessor {
      * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
      */
     private static final int ESTIMATED_CELL_SIZE = 50;
+    /**
+     * 正则去除空格和换行符的正则表达式
+     */
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
     /**
      * 单页最大表格数量限制
@@ -179,7 +181,7 @@ public class TableBatchProcessor {
             if (tableContent == null) continue;
 
             // 数据清洗
-            PdfTableParsingEngine.cleanData(tableContent);
+            cleanData(tableContent);
 
             // 生成表格指纹
             String tableFingerprint = generateTableFingerprint(tableContent);
@@ -221,7 +223,21 @@ public class TableBatchProcessor {
         }
     }
 
+    /**
+     * 执行表格数据清洗操作。包括：
+     * 1. 移除所有空白字符和换行符
+     * 2. 在数据首尾添加表格标记用于后续识别(已移除，降低复杂度)
+     *
+     * @param builder 包含原始表格数据的字符串构建器，要求非空
+     */
+    private static void cleanData(StringBuilder builder) {
+        Objects.requireNonNull(builder, "StringBuilder must not be null");
 
+        // 删除空格和换行符（使用预编译正则）
+        String cleaned = WHITESPACE_PATTERN.matcher(builder.toString()).replaceAll("");
+        builder.setLength(0);
+        builder.append(cleaned);
+    }
     /**
      * 处理单个表格数据，将表格内容拼接为字符串并记录日志
      *      * 处理单个表格数据结构。将表格的行列数据转换为带格式的文本表示，

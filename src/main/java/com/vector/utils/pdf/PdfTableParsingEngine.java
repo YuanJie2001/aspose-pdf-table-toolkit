@@ -28,11 +28,6 @@ import java.util.regex.Pattern;
 public class PdfTableParsingEngine {
 
     /**
-     * 正则去除空格和换行符的正则表达式
-     */
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-
-    /**
      * 表格批处理器实例
      */
     private final TableBatchProcessor batchProcessor;
@@ -92,20 +87,4 @@ public class PdfTableParsingEngine {
         batchProcessor.addPageTables(pageIndex, tables);
     }
 
-
-    /**
-     * 执行表格数据清洗操作。包括：
-     * 1. 移除所有空白字符和换行符
-     * 2. 在数据首尾添加表格标记用于后续识别
-     *
-     * @param builder 包含原始表格数据的字符串构建器，要求非空
-     */
-    protected static void cleanData(StringBuilder builder) {
-        Objects.requireNonNull(builder, "StringBuilder must not be null");
-
-        // 删除空格和换行符（使用预编译正则）
-        String cleaned = WHITESPACE_PATTERN.matcher(builder.toString()).replaceAll("");
-        builder.setLength(0);
-        builder.append(cleaned);
-    }
 }
