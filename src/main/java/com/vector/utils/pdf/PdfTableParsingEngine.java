@@ -26,10 +26,7 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor
 public class PdfTableParsingEngine {
-    /**
-     * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
-     */
-    private static final int ESTIMATED_CELL_SIZE = 50;
+
     /**
      * 正则去除空格和换行符的正则表达式
      */
@@ -95,78 +92,6 @@ public class PdfTableParsingEngine {
         batchProcessor.addPageTables(pageIndex, tables);
     }
 
-    /**
-     * 处理单个表格数据，将表格内容拼接为字符串并记录日志
-     *      * 处理单个表格数据结构。将表格的行列数据转换为带格式的文本表示，
-     *      * 使用管道符分隔列，换行符分隔行
-     * 函数在多线程环境下运行，通过使用局部变量保障线程安全。处理过程包括：
-     * 1. 初始化表格内容缓冲区
-     * 2. 遍历表格行和单元格
-     * 3. 处理单元格内容并拼接表格结构符号
-     *
-     * @param table 需要处理的表格对象，包含完整的行列结构数据
-     * @return StringBuilder 包含格式化后的表格文本内容，返回null表示无有效数据
-     */
-    protected static StringBuilder processSingleTable(AbsorbedTable table) {
-        // 多线程，避免线程安全问题。多线程表格解析
-        // 缓存行集合
-        List<AbsorbedRow> rows = table.getRowList();
-
-        /* 初始化表格缓冲区，根据首行单元格数量预估初始容量 */
-        StringBuilder tableContext = new StringBuilder(rows.size() * rows.getFirst().getCellList().size() * ESTIMATED_CELL_SIZE);
-
-        if (CollectionUtils.isEmpty(rows)) return null;
-
-        /* 行处理：遍历所有数据行 */
-        for (AbsorbedRow row : rows) {
-            // 缓存单元格集合
-            List<AbsorbedCell> cells = row.getCellList();
-            if (CollectionUtils.isEmpty(cells)) continue;
-
-            /* 单元格处理：拼接单元格内容并添加列分隔符 */
-            for (AbsorbedCell cell : cells) {
-                processCellContext(cell, tableContext);
-                tableContext.append("|");
-            }
-            tableContext.append("\n");
-        }
-
-        /* 最终结果输出：将拼接完成的表格内容写入日志 */
-        return tableContext;
-    }
-
-
-    /**
-     * 处理单元格文本内容。聚合单元格内所有文本段落到表格上下文中，
-     * 保留原始文本顺序和段落结构
-     *
-     * @param cell         PDF表格单元格对象，包含文本片段集合
-     * @param tableContext 用于存储聚合后文本内容的字符串构建器，
-     *                     append操作会直接修改该对象状态
-     */
-    private static void processCellContext(AbsorbedCell cell, StringBuilder tableContext) {
-        // 获取并校验单元格文本片段集合
-        TextFragmentCollection fragments = cell.getTextFragments();
-        if (fragments == null) return;
-
-        // 遍历所有文本块（段落结构）
-        for (TextFragment fragment : fragments) {
-            /*
-             * 聚合单元格内所有文本样式片段：
-             * 1. 遍历段落中的每个文本片段
-             * 2. 对文本内容进行转义处理
-             * 3. 将安全的文本内容追加到表格上下文
-             */
-            for (TextSegment seg : fragment.getSegments()) {
-                // 获取原始文本
-                String text = seg.getText();
-                // 执行转义处理（使用PLAIN上下文，保留基本格式）
-                String safeText = StringEscapeUtil.escapeByContext(text, StringEscapeUtil.ContextType.PLAIN);
-                // 添加到表格上下文
-                tableContext.append(safeText);
-            }
-        }
-    }
 
     /**
      * 执行表格数据清洗操作。包括：

@@ -1,8 +1,9 @@
 package com.vector.utils.pdf;
 
-import com.aspose.pdf.AbsorbedTable;
+import com.aspose.pdf.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,10 @@ public class TableBatchProcessor {
      * 表格缓冲队列容量（页数）
      */
     private static final int BUFFER_CAPACITY = 50;
+    /**
+     * 表格解析时，每个单元格内容预估字符数，用于初始化表格缓冲区
+     */
+    private static final int ESTIMATED_CELL_SIZE = 50;
 
     /**
      * 单页最大表格数量限制
@@ -158,7 +163,7 @@ public class TableBatchProcessor {
      * @param pageIndex 页码索引
      * @param tables    页面中的表格列表
      */
-    public void addPageTables(int pageIndex, List<AbsorbedTable> tables) {
+    protected void addPageTables(int pageIndex, List<AbsorbedTable> tables) {
         // 资源限制检查 一页10个表格
         if (tables.size() > MAX_TABLES_PER_PAGE) {
             log.warn("页面{}表格数量超过限制: {}", pageIndex, tables.size());
@@ -170,7 +175,7 @@ public class TableBatchProcessor {
         List<StringBuilder> processedTables = new ArrayList<>();
         for (AbsorbedTable table : tables) {
             // 处理单个表格
-            StringBuilder tableContent = PdfTableParsingEngine.processSingleTable(table);
+            StringBuilder tableContent = processSingleTable(table);
             if (tableContent == null) continue;
 
             // 数据清洗
@@ -216,10 +221,83 @@ public class TableBatchProcessor {
         }
     }
 
+
+    /**
+     * 处理单个表格数据，将表格内容拼接为字符串并记录日志
+     *      * 处理单个表格数据结构。将表格的行列数据转换为带格式的文本表示，
+     *      * 使用管道符分隔列，换行符分隔行
+     * 函数在多线程环境下运行，通过使用局部变量保障线程安全。处理过程包括：
+     * 1. 初始化表格内容缓冲区
+     * 2. 遍历表格行和单元格
+     * 3. 处理单元格内容并拼接表格结构符号
+     *
+     * @param table 需要处理的表格对象，包含完整的行列结构数据
+     * @return StringBuilder 包含格式化后的表格文本内容，返回null表示无有效数据
+     */
+    private static StringBuilder processSingleTable(AbsorbedTable table) {
+        // 多线程，避免线程安全问题。多线程表格解析
+        // 缓存行集合
+        List<AbsorbedRow> rows = table.getRowList();
+
+        /* 初始化表格缓冲区，根据首行单元格数量预估初始容量 */
+        StringBuilder tableContext = new StringBuilder(rows.size() * rows.getFirst().getCellList().size() * ESTIMATED_CELL_SIZE);
+
+        if (CollectionUtils.isEmpty(rows)) return null;
+
+        /* 行处理：遍历所有数据行 */
+        for (AbsorbedRow row : rows) {
+            // 缓存单元格集合
+            List<AbsorbedCell> cells = row.getCellList();
+            if (CollectionUtils.isEmpty(cells)) continue;
+
+            /* 单元格处理：拼接单元格内容并添加列分隔符 */
+            for (AbsorbedCell cell : cells) {
+                processCellContext(cell, tableContext);
+                tableContext.append("|");
+            }
+            tableContext.append("\n");
+        }
+
+        /* 最终结果输出：将拼接完成的表格内容写入日志 */
+        return tableContext;
+    }
+
+
+    /**
+     * 处理单元格文本内容。聚合单元格内所有文本段落到表格上下文中，
+     * 保留原始文本顺序和段落结构
+     *
+     * @param cell         PDF表格单元格对象，包含文本片段集合
+     * @param tableContext 用于存储聚合后文本内容的字符串构建器，
+     *                     append操作会直接修改该对象状态
+     */
+    private static void processCellContext(AbsorbedCell cell, StringBuilder tableContext) {
+        // 获取并校验单元格文本片段集合
+        TextFragmentCollection fragments = cell.getTextFragments();
+        if (fragments == null) return;
+
+        // 遍历所有文本块（段落结构）
+        for (TextFragment fragment : fragments) {
+            /*
+             * 聚合单元格内所有文本样式片段：
+             * 1. 遍历段落中的每个文本片段
+             * 2. 对文本内容进行转义处理
+             * 3. 将安全的文本内容追加到表格上下文
+             */
+            for (TextSegment seg : fragment.getSegments()) {
+                // 获取原始文本
+                String text = seg.getText();
+                // 执行转义处理（使用PLAIN上下文，保留基本格式）
+                String safeText = StringEscapeUtil.escapeByContext(text, StringEscapeUtil.ContextType.PLAIN);
+                // 添加到表格上下文
+                tableContext.append(safeText);
+            }
+        }
+    }
     /**
      * 提交批处理任务
      */
-    public void submitBatchTask() {
+    protected void submitBatchTask() {
         List<List<StringBuilder>> batchTables = new ArrayList<>();
         tableBufferQueue.drainTo(batchTables);
 
@@ -554,7 +632,7 @@ public class TableBatchProcessor {
      * 关闭处理器
      * 虚拟线程不需要关闭，因为虚拟线程会自动关闭
      */
-    public void shutdown() {
+    protected void shutdown() {
         // 提交剩余的表格
         submitBatchTask();
         // 处理跨页表格缓存中的表格
