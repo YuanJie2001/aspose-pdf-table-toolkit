@@ -6,6 +6,8 @@
 jar cvfm aspose-words-24.3-jdk17-crack.jar META-INF/MANIFEST.MF com/
 
 使用方式：在路径`src/main/java/com/vector/utils/pdf/handler`下，自定义映射处理器，继承TextParsingResultMapper类。
+
+源码解析请参考：https://blog.csdn.net/m0_50913327/article/details/146550653?sharetype=blogdetail&sharerId=146550653&sharerefer=PC&sharesource=m0_50913327&spm=1011.2480.3001.8118
 # 待解决的问题清单
 
 ## 1.减少映射器调用次数。解析器按页分批次交付给映射处理器。收集一页的表格交给子线程映射处理。（已完成）
