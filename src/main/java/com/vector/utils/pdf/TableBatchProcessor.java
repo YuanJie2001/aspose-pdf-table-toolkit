@@ -150,7 +150,8 @@ public class TableBatchProcessor {
 
         // 限制缓存条目数量
         if (crossPageTableCache.size() > MAX_CACHE_ENTRIES) {
-            expiredKeys.addAll(crossPageTableCache.keySet());
+            crossPageTableCache.clear();
+            throw new IllegalStateException("缓存条目数量超过限制");
         }
 
         for (String key : expiredKeys) {
