@@ -10,9 +10,6 @@ import org.springframework.util.CollectionUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 
 /**
  * pdf 表格解析工具类，提供从PDF文档中提取并处理表格数据的功能
