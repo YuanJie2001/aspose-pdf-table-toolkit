@@ -1,5 +1,8 @@
 server:
-  port: 8081
+  port: 9200
+  tomcat:
+    threads:
+      max: 200
 spring:
   application:
     name: aspose-pdf-table-toolkit

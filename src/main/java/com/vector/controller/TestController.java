@@ -1,9 +1,11 @@
 package com.vector.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.vector.utils.pdf.PdfTableParsingEngine;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author YuanJie
@@ -17,7 +19,7 @@ import com.vector.utils.pdf.PdfTableParsingEngine;
 public class TestController {
 
     private final PdfTableParsingEngine pdfTableParsingEngine;
-    @RequestMapping("/hello")
+    @GetMapping("/hello")
     public String hello(){
         String path = "C:\\Users\\YuanJie\\Desktop\\aspose-pdf-table-toolkit\\入职申请表.pdf";
 //        path = "C:\\Users\\YuanJie\\Desktop\\demo-aspose-pdf-table-read\\横向表头.pdf";
