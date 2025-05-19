@@ -33,20 +33,23 @@ public class TableFieldMapperAspect <V>{
      * @param clazz 需要加载映射关系的目标类
      * @return 映射关系Map，结构为[表字段名 -> 对应的Field对象]
      */
-    public static <V> Map<String, Field> loadFieldMappings(Class<V> clazz) {
+    public static <V> Map<String, Field> loadFieldMappings(Class<V> clazz){
         return CLASS_FIELD_CACHE.computeIfAbsent(clazz, cls -> {
             Map<String, Field> fieldMap = new HashMap<>();
             Field[] fields = cls.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
+                // 预防跨页半个表格
+                String val = field.getName();
+                if(val.isBlank())return null;
                 TableFieldMap annotation = field.getAnnotation(TableFieldMap.class);
                 if (annotation != null) {
                     String tableFieldName = annotation.value();
                     fieldMap.put(tableFieldName, field);
-                    log.debug("加载字段映射: {} -> {}", tableFieldName, field.getName());
+                    log.debug("加载字段映射: {} -> {}", tableFieldName, val);
                 }
             }
-            log.info("成功加载 {} 个字段映射", fieldMap.size());
+            log.debug("成功加载 {} 个字段映射", fieldMap.size());
             return fieldMap;
         });
     }

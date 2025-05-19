@@ -4,6 +4,7 @@ import com.vector.utils.SpringContextUtil;
 import com.vector.utils.pdf.aspect.TableFieldMapperAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -140,8 +141,10 @@ public abstract class AbstractTextMappingTemplate {
         }
         
         // 加载字段映射关系（只需加载一次）
-        Map<String, Field> loadFieldMappings = TableFieldMapperAspect.loadFieldMappings(clazz);
-        
+        Map<String, Field> loadFieldMappings = null;
+        loadFieldMappings = TableFieldMapperAspect.loadFieldMappings(clazz);
+        if(CollectionUtils.isEmpty(loadFieldMappings)) return null;
+
         // 遍历所有匹配的键值对
         while (matcher.find()) {
             String key = matcher.group(1).trim();
