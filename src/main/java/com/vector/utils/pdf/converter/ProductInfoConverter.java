@@ -33,7 +33,7 @@ public class ProductInfoConverter extends AbstractTextMappingTemplate {
             productInfo.setCreateAt(LocalDate.now());
 
             // 输出解析结果
-            log.debug("成功解析ProductInfo: {}", productInfo);
+            log.info("成功解析ProductInfo: {}", productInfo);
 
             // 这里可以添加保存到数据库或其他处理逻辑
         } catch (Exception e) {
