@@ -6,4 +6,7 @@ server:
 spring:
   application:
     name: aspose-pdf-table-toolkit
+logging:
+  level:
+    root: debug
 

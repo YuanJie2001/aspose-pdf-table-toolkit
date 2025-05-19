@@ -212,7 +212,7 @@ public class TableBatchProcessor {
             try {
                 // 尝试添加到队列，如果队列已满则提交当前队列中的所有表格
                 if (!tableBufferQueue.offer(processedTables, 100, TimeUnit.MILLISECONDS)) {
-                    log.info("缓冲队列已满，提交批处理任务");
+                    log.warn("缓冲队列已满，提交批处理任务");
                     submitBatchTask();
                     // 重新尝试添加
                     tableBufferQueue.put(processedTables);
@@ -560,7 +560,7 @@ public class TableBatchProcessor {
                 try {
                     double similarity = calculateSimilarity(cachedFingerprint, tableFingerprint);
                     if (similarity >= TABLE_SIMILARITY_THRESHOLD) {
-                        log.info("检测到跨页表格，相似度: {}", similarity);
+                        log.debug("检测到跨页表格，相似度: {}", similarity);
                         return true;
                     }
                 } catch (Exception e) {
@@ -585,6 +585,7 @@ public class TableBatchProcessor {
 
         // 遍历缓存找到最相似的表格
         for (Map.Entry<String, CacheEntry> entry : crossPageTableCache.entrySet()) {
+            // 获取缓存的表格指纹
             String cachedFingerprint = entry.getKey();
             CacheEntry cacheEntry = entry.getValue();
             try {
@@ -597,31 +598,32 @@ public class TableBatchProcessor {
                     matchedEntry = cacheEntry;
                 }
             } catch (Exception e) {
-                log.error("计算相似度时发生错误", e);
+                log.error("指纹{}与{}相似度计算失败", cachedFingerprint, tableFingerprint, e);
             }
         }
 
         StringBuilder mergedTable;
-        if (matchedFingerprint != null) {
-            mergedTable = new StringBuilder(matchedEntry.content);
-            // 避免重复内容
-            String content = tableContent.toString();
-            if (!mergedTable.toString().contains(content)) {
-                mergedTable.append(content);
-                log.info("合并跨页表格: {}", matchedFingerprint);
-            } else {
-                log.info("跳过重复内容的跨页表格: {}", matchedFingerprint);
-            }
-
-            crossPageTableCache.put(matchedFingerprint, new CacheEntry(mergedTable));
-            if (!matchedFingerprint.equals(tableFingerprint)) {
-                crossPageTableCache.remove(tableFingerprint);
-                log.info("剔除旧表格条目: {}", tableFingerprint);
-            }
-        } else {
+        // 如果没有匹配的表格，则创建一个新的缓存项
+        if (matchedFingerprint == null) {
             mergedTable = new StringBuilder(tableContent);
             CacheEntry newEntry = new CacheEntry(mergedTable);
             crossPageTableCache.put(tableFingerprint, newEntry);
+            return mergedTable;
+        }
+        mergedTable = new StringBuilder(matchedEntry.content);
+        // 避免重复内容
+        String content = tableContent.toString();
+        // 如果合并后的表格中不包含当前表格的内容，则添加当前表格的内容，避免重复添加攻击
+        if (!mergedTable.toString().contains(content)) {
+            mergedTable.append(content);
+            log.debug("合并跨页表格: {}", matchedFingerprint);
+        }
+        // 更新覆盖缓存
+        crossPageTableCache.put(matchedFingerprint, new CacheEntry(mergedTable));
+        // 当相似度极高但指纹不同时，删除新条目，避免重复半截的表格
+        if (!matchedFingerprint.equals(tableFingerprint)) {
+            crossPageTableCache.remove(tableFingerprint);
+            log.debug("剔除旧表格条目: {}", tableFingerprint);
         }
         return mergedTable;
     }
