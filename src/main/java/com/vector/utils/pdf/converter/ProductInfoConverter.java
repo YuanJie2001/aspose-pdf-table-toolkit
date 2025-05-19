@@ -26,7 +26,7 @@ public class ProductInfoConverter extends AbstractTextMappingTemplate {
             
             // 提取键值对并映射到对象
             ProductInfo productInfo = super.mapToEntity(content, ProductInfo.class);
-
+            if(productInfo == null)return;
             // 设置创建时间
             productInfo.setCreateAt(new Date());
 
