@@ -5,6 +5,7 @@ import com.vector.utils.pdf.annotation.TableFieldMap;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -157,12 +158,12 @@ public class ProductInfo implements Serializable {
     /**
      * 创建时间
      */
-    private Date createAt;
+    private LocalDate createAt;
 
     /**
      * 修改时间
      */
-    private Date updateAt;
+    private LocalDate updateAt;
 
     /**
      * 创建人id

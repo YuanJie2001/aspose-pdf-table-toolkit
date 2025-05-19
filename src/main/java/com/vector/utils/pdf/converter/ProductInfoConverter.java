@@ -4,6 +4,8 @@ import com.vector.utils.pdf.entity.ProductInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import com.vector.utils.pdf.AbstractTextMappingTemplate;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -28,7 +30,7 @@ public class ProductInfoConverter extends AbstractTextMappingTemplate {
             ProductInfo productInfo = super.mapToEntity(content, ProductInfo.class);
             if(productInfo == null)return;
             // 设置创建时间
-            productInfo.setCreateAt(new Date());
+            productInfo.setCreateAt(LocalDate.now());
 
             // 输出解析结果
             log.info("成功解析ProductInfo: {}", productInfo);
