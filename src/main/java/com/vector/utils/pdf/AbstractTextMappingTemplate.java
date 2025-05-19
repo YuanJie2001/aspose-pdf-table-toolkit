@@ -54,7 +54,7 @@ public abstract class AbstractTextMappingTemplate {
                     }
                     // 获取所有子类实现实例
                     Map<String, AbstractTextMappingTemplate> beans = context.getBeansOfType(AbstractTextMappingTemplate.class);
-                    log.info("找到 {} 个ParsingMappingHandler实现类", beans.size());
+                    log.debug("找到 {} 个ParsingMappingHandler实现类", beans.size());
                     List<AbstractTextMappingTemplate> handlers = new ArrayList<>(beans.values());
                     // 防御性校验确保至少有一个处理器
                     if (handlers.isEmpty()) {
@@ -79,7 +79,7 @@ public abstract class AbstractTextMappingTemplate {
     public final void processTable(StringBuilder sb) {
         // 执行标准处理流程
         if (shouldHandle(sb)) {
-            log.info("解析结果：{}", sb);
+            log.debug("解析结果：{}", sb);
             doMapping(sb);// 执行映射
             postProcess(); // 钩子方法调用
         }
