@@ -46,10 +46,10 @@ public class TableFieldMapperAspect <V>{
                 if (annotation != null) {
                     String tableFieldName = annotation.value();
                     fieldMap.put(tableFieldName, field);
-                    log.debug("加载字段映射: {} -> {}", tableFieldName, val);
+                    log.info("加载字段映射: {} -> {}", tableFieldName, val);
                 }
             }
-            log.debug("成功加载 {} 个字段映射", fieldMap.size());
+            log.info("成功加载 {} 个字段映射", fieldMap.size());
             return fieldMap;
         });
     }

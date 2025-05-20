@@ -8,5 +8,5 @@ spring:
     name: aspose-pdf-table-toolkit
 logging:
   level:
-    root: debug
+    root: info
 

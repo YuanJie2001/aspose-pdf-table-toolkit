@@ -560,7 +560,7 @@ public class TableBatchProcessor {
                 try {
                     double similarity = calculateSimilarity(cachedFingerprint, tableFingerprint);
                     if (similarity >= TABLE_SIMILARITY_THRESHOLD) {
-                        log.debug("检测到跨页表格，相似度: {}", similarity);
+                        log.info("检测到跨页表格，相似度: {}", similarity);
                         return true;
                     }
                 } catch (Exception e) {
@@ -616,14 +616,14 @@ public class TableBatchProcessor {
         // 如果合并后的表格中不包含当前表格的内容，则添加当前表格的内容，避免重复添加攻击
         if (!mergedTable.toString().contains(content)) {
             mergedTable.append(content);
-            log.debug("合并跨页表格: {}", matchedFingerprint);
+            log.info("合并跨页表格: {}", matchedFingerprint);
         }
         // 更新覆盖缓存
         crossPageTableCache.put(matchedFingerprint, new CacheEntry(mergedTable));
         // 当相似度极高但指纹不同时，删除新条目，避免重复半截的表格
         if (!matchedFingerprint.equals(tableFingerprint)) {
             crossPageTableCache.remove(tableFingerprint);
-            log.debug("剔除旧表格条目: {}", tableFingerprint);
+            log.info("剔除旧表格条目: {}", tableFingerprint);
         }
         return mergedTable;
     }
