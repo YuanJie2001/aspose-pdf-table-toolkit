@@ -196,6 +196,8 @@ public class TableBatchProcessor {
             if (isCrossPageTable(tableFingerprint)) {
                 // 合并跨页表格
                 tableContent = mergeCrossPageTable(tableContent, tableFingerprint);
+                // 从tableBufferQueue中移除重复表格
+                removeDuplicateTablesFromQueue(tableFingerprint);
             } else {
                 // 异常检测（连续重复表格）
                 if (isDuplicateTable(tableFingerprint)) {
@@ -211,7 +213,7 @@ public class TableBatchProcessor {
         if (!processedTables.isEmpty()) {
             try {
                 // 尝试添加到队列，如果队列已满则提交当前队列中的所有表格
-                if (!tableBufferQueue.offer(processedTables, 100, TimeUnit.MILLISECONDS)) {
+                if (!tableBufferQueue.offer(processedTables, 1000, TimeUnit.MILLISECONDS)) {
                     log.warn("缓冲队列已满，提交批处理任务");
                     submitBatchTask();
                     // 重新尝试添加
@@ -219,6 +221,44 @@ public class TableBatchProcessor {
                 }
             } catch (InterruptedException e) {
                 log.error("添加表格到缓冲队列失败: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    /**
+     * 从tableBufferQueue中移除重复表格
+     * @param tableFingerprint 表格指纹
+     */
+    private void removeDuplicateTablesFromQueue(String tableFingerprint) {
+        // 临时存储队列中的元素
+        List<List<StringBuilder>> tempQueue = new ArrayList<>();
+        tableBufferQueue.drainTo(tempQueue);
+
+        // 遍历队列中的元素，移除重复表格
+        if(CollectionUtils.isEmpty(tempQueue)){
+            return;
+        }
+        tempQueue.parallelStream().forEach(pageTables -> {
+            Iterator<StringBuilder> iterator = pageTables.iterator();
+            while (iterator.hasNext()) {
+                StringBuilder tableContent = iterator.next();
+                String currentFingerprint = generateTableFingerprint(tableContent);
+                if (calculateSimilarity(currentFingerprint, tableFingerprint) > TABLE_SIMILARITY_THRESHOLD) {
+                    iterator.remove();
+                }
+            }
+        });
+
+        // 移除空列表
+        tempQueue.removeIf(List::isEmpty);
+
+        // 将处理后的元素重新添加到队列中，不包含当前处理的表格
+        for (List<StringBuilder> pageTables : tempQueue) {
+            try {
+                tableBufferQueue.put(pageTables);
+            } catch (InterruptedException e) {
+                log.error("重新添加表格到缓冲队列失败: {}", e.getMessage());
                 Thread.currentThread().interrupt();
             }
         }
